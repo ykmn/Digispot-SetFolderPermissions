@@ -2,10 +2,11 @@
 ================================================================
 Roman Ermakov <r.ermakov@emg.fm>
 
-v1.00 2018-06-07 Initial release
+v1.00 2018-06-07 Первоначальный вариант
 
-v1.01 2018-08-24 Rewritten on PowerShell
+v1.01 2018-08-24 Переписан на PowerShell
 
+v1.02 2019-02-26 Добавлена проверка наличия папки %PROGRAMFILES%\Digispot II
 
 К сожалению, исторически Digispot II хранит локальные настройки не в C:\ProgramData, а в C:\Program Files\Disigpot II\DJin.
 Поэтому после установки ПО Digispot II требуется [дать пользователям полные права на эту папку][1].
