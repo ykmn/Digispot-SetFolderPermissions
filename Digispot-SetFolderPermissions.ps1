@@ -3,6 +3,7 @@ Digispot-SetFolderPermissions.ps1
 
 v1.00 2018-06-07 Initial release
 v1.01 2018-08-24 Rewritten on PowerShell
+v1.02 2019-02-26 Added check for %PROGRAMFILES%\Digispot II
 
 .NOTES
     Copyright (c) Roman Ermakov <r.ermakov@emg.fm>
@@ -32,6 +33,11 @@ v1.01 2018-08-24 Rewritten on PowerShell
     None
 #>
 
+if ($PSVersionTable.PSVersion.Major -lt 5) {
+    Write-Host "`n`nThis script wowks with PowerShell 5.0 or newer.`nPlease upgrade!`n"
+    Break
+}
+
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
     # Relaunch as an elevated process:
@@ -47,9 +53,16 @@ if ([Environment]::Is64BitProcess) {
 }
 
 Write-Host
-Write-Host "Digispot-SetPermissions"
+Write-Host "Digispot-SetPermissions" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+Write-Host " v1.02 2019-02-26"
 Write-Host "Set full ACL Permissions for .\Users local group to Digispot II installation folder."
-Write-Host
+
+
+if (!(Test-Path $p)) {
+    Write-Host "`nFolder" $p "is not found. Creating..." -NoNewLine
+    New-Item -Path $p -Force -ItemType Directory | Out-Null
+    Write-Host "Done."
+}
 
 $user = '.\Users'
 $acl = Get-ACL -Path $p
@@ -57,5 +70,5 @@ $new = $user,'FullControl','ContainerInherit,ObjectInherit','None','Allow'
 $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $new
 $acl.AddAccessRule($accessRule)
 $acl | Set-ACL -Path $p -Verbose
-Write-Host -NoNewLine 'Press any key to continue.';
+Write-Host -NoNewLine 'Done. Press any key to continue.';
 $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
