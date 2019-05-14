@@ -33,8 +33,11 @@ v1.02 2019-02-26 Added check for %PROGRAMFILES%\Digispot II
     None
 #>
 
+#requires -version 5.0
+#requires –RunAsAdministrator
+
 if ($PSVersionTable.PSVersion.Major -lt 5) {
-    Write-Host "`n`nThis script wowks with PowerShell 5.0 or newer.`nPlease upgrade!`n"
+    Write-Warning "`n`nThis script works with PowerShell 5.0 or newer.`nPlease upgrade!`n"
     Break
 }
 
