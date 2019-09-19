@@ -4,6 +4,8 @@ Digispot-SetFolderPermissions.ps1
 v1.00 2018-06-07 Initial release
 v1.01 2018-08-24 Rewritten on PowerShell
 v1.02 2019-02-26 Added check for %PROGRAMFILES%\Digispot II
+v1.03 2019-09-19 Set permissions for Digispot 3 NJM
+
 
 .NOTES
     Copyright (c) Roman Ermakov <r.ermakov@emg.fm>
@@ -24,7 +26,7 @@ v1.02 2019-02-26 Added check for %PROGRAMFILES%\Digispot II
     Run this script after initial Digispot II installation or anytime you need to set full ACL.
 
 .EXAMPLE
-    .\SetACL-Digispot.ps1
+    .\Digispot-SetFolderPermissions.ps1
 
 .PARAMETER None
     None
@@ -50,13 +52,15 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 
 if ([Environment]::Is64BitProcess) {
     $p = ${env:ProgramFiles(x86)} + '\Digispot II'
+    $p3 = ${env:ProgramFiles(x86)} + '\Digispot 3 Njm'
 } else {
     $p = $env:ProgramFiles + '\Digispot II'
+    $p3 = $env:ProgramFiles + '\Digispot 3 Njm'
 }
 
 Write-Host
 Write-Host "Digispot-SetPermissions" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
-Write-Host " v1.02 2019-02-26"
+Write-Host " v1.03 2019-09-19"
 Write-Host "Set full ACL Permissions for .\Users local group to Digispot II installation folder."
 
 
@@ -74,3 +78,14 @@ $acl.AddAccessRule($accessRule)
 $acl | Set-ACL -Path $p -Verbose
 Write-Host -NoNewLine 'Done. Press any key to continue.';
 $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
+
+if (Test-Path $p3) {
+    $user = '.\Users'
+    $acl = Get-ACL -Path $p3
+    $new = $user,'FullControl','ContainerInherit,ObjectInherit','None','Allow'
+    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $new
+    $acl.AddAccessRule($accessRule)
+    $acl | Set-ACL -Path $p3 -Verbose
+    Write-Host -NoNewLine 'Done. Press any key to continue.';
+    $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
+}
